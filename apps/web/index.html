@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Virtual Industrial Lab — Laboratoire moteur</title>
+  <style>
+    body { margin: 0; font-family: system-ui, sans-serif; background: #0f1115; color: #eee; }
+    #scene-container { width: 100vw; height: 60vh; }
+    #panel { padding: 16px; }
+    #panel h1 { font-size: 1.1rem; margin: 0 0 8px; }
+    #login-row, #session-row, #nameplate-row { display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; align-items: center; }
+    #nameplate-row input { width: 110px; }
+    input { padding: 6px 8px; border-radius: 4px; border: 1px solid #333; background: #1b1e24; color: #eee; }
+    button { padding: 6px 12px; border-radius: 4px; border: none; background: #2e7d32; color: white; cursor: pointer; }
+    button:hover { background: #388e3c; }
+    button.secondary { background: #37474f; }
+    button.danger { background: #c62828; }
+    #measurements { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 12px; }
+    .metric { background: #1b1e24; border-radius: 6px; padding: 10px; text-align: center; }
+    .metric .value { font-size: 1.3rem; font-weight: bold; }
+    .metric .label { font-size: 0.75rem; color: #aaa; }
+    #status-badge { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 0.85rem; }
+    #log { font-size: 0.8rem; color: #999; margin-top: 8px; max-height: 100px; overflow-y: auto; }
+  </style>
+</head>
+<body>
+  <div id="scene-container"></div>
+  <div id="panel">
+    <h1>Virtual Industrial Lab — Laboratoire moteur (Phase 5)</h1>
+
+    <div id="login-row">
+      <input id="email" type="email" placeholder="email" value="lab@vil.com" />
+      <input id="password" type="password" placeholder="mot de passe" value="secret123" />
+      <button id="btn-login">Connexion / Inscription</button>
+      <span id="auth-status">non connecté</span>
+    </div>
+
+    <div id="session-row">
+      <button id="btn-create-session" class="secondary">Nouvelle session (placeholder)</button>
+      <button id="btn-start-direct">Démarrer (direct)</button>
+      <button id="btn-start-star">Démarrer (étoile-triangle)</button>
+      <button id="btn-stop" class="secondary">Arrêter</button>
+      <button id="btn-fault-thermal" class="danger">Défaut thermique</button>
+      <button id="btn-fault-electrical" class="danger">Défaut électrique</button>
+      <button id="btn-reset" class="secondary">Réarmer</button>
+      <button id="btn-ack" class="secondary">Acquitter</button>
+    </div>
+
+    <div id="nameplate-row">
+      <strong>Plaque signalétique réelle (génère un vrai modèle 3D via Blender) :</strong><br/>
+      <input id="np-power" type="number" step="0.01" placeholder="Puissance (kW)" value="1.5" />
+      <input id="np-poles" type="number" placeholder="Pôles" value="4" />
+      <input id="np-speed" type="number" placeholder="Vitesse nominale (tr/min)" value="1450" />
+      <input id="np-voltage" type="number" placeholder="Tension (V)" value="400" />
+      <input id="np-current" type="number" step="0.1" placeholder="Courant (A)" value="3.2" />
+      <button id="btn-create-asset-and-model">Créer Asset + générer modèle 3D réel</button>
+      <span id="asset-status"></span>
+    </div>
+
+    <span id="status-badge">état: —</span>
+
+    <div id="measurements">
+      <div class="metric"><div class="value" id="m-voltage">—</div><div class="label">Tension (V)</div></div>
+      <div class="metric"><div class="value" id="m-current">—</div><div class="label">Courant (A)</div></div>
+      <div class="metric"><div class="value" id="m-temp">—</div><div class="label">Température (°C)</div></div>
+      <div class="metric"><div class="value" id="m-fault">—</div><div class="label">Défaut actif</div></div>
+    </div>
+
+    <div id="log"></div>
+  </div>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.169.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.169.0/examples/jsm/"
+    }
+  }
+  </script>
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
