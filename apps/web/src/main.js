@@ -12,7 +12,7 @@ import { getMotorColor, getRotationSpeed, shouldPulseAlert, temperatureToHeatOve
 // ⚠️ Le chargement GLB n'a pas pu être testé visuellement dans mon
 // environnement (pas de navigateur disponible) — voir apps/web/README.md.
 
-const API_BASE_URL = window.VIL_API_BASE_URL || "http://localhost:8000";
+const API_BASE_URL = window.VIL_API_BASE_URL || "https://upgraded-space-bassoon-57rpj957vp42757w-8000.app.github.dev";
 const api = createApiClient(API_BASE_URL);
 
 let currentSessionId = null;
