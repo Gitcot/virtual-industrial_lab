@@ -1,45 +1,63 @@
-# Client web — Laboratoire moteur (Phase 5)
+# 🏭 Laboratoire Industriel VR - Jumeau Numérique (V4.1)
 
-Client web minimal (HTML + JS modules ES + Three.js via CDN) qui consomme
-l'API du laboratoire moteur (Phase 4) et affiche une représentation 3D de
-l'état du moteur en temps réel.
+Un simulateur interactif et physique de niveau industriel pour la formation en électrotechnique, maintenance et ingénierie des systèmes motorisés.
 
-## ⚠️ Statut de test — à lire avant utilisation
+![Version](https://img.shields.io/badge/Version-4.1-blue)
+![Stack](https://img.shields.io/badge/Stack-Python_FastAPI_%7C_Three.js-success)
+![Status](https://img.shields.io/badge/Status-Opérationnel-brightgreen)
 
-**Testé réellement (32 tests automatisés, `node --test`) :**
-- `src/motorVisuals.js` — logique pure de mapping état→couleur/vitesse de
-  rotation/alerte : **14/14 tests passent**
-- `src/apiClient.js` — client HTTP vers l'API (avec `fetch` simulé) :
-  **6/6 tests passent**, y compris la gestion des erreurs 409/400/500
+## 🌟 Fonctionnalités Principales
 
-**NON testé par moi, à vérifier par vous :**
-- Le rendu 3D réel dans un navigateur (`src/main.js`, `index.html`). Mon
-  environnement d'exécution n'a pas d'accès navigateur/Chromium (le
-  téléchargement du binaire est bloqué par la configuration réseau du
-  sandbox). J'ai vérifié la syntaxe JS (`node --check`, aucune erreur) et la
-  cohérence logique (CORS backend déjà configuré pour ce port), mais **pas
-  le rendu visuel lui-même**. C'est la première chose à valider de votre
-  côté (voir Guide d'utilisation).
+### 1. Simulation Physique & Mécanique Temps Réel
+* **Modélisation Thermodynamique :** Calcul de l'échauffement ($I^2t$) et refroidissement. Le stator rougeoie en cas de surchauffe.
+* **Dynamique des Charges :** Comportement adaptatif selon la charge (À vide, Pompe/Ventilateur, Convoyeur, Broyeur à forte inertie).
+* **Technologies de Démarrage :** Démarrage Direct (DOL), Étoile-Triangle ($Y/\Delta$), Démarreur Progressif (Soft-Starter), et Variateur de Vitesse (VFD - $V/f$ constant).
 
-## Géométrie 3D : placeholder assumé
+### 2. Outils de Métrologie Intégrés (CND)
+* 📈 **Oscilloscope Transitoire :** Visualisation en temps réel des courbes de Courant (I) et de Vitesse (N).
+* 📉 **Analyseur de Spectre (FFT) :** Détection des signatures vibratoires pour la maintenance prédictive mécanique.
+* ⚡ **Multimètre & Mégohmmètre :** Mesures de tension (AC/DC), continuité, et test d'isolement sous 500V/1000V DC.
 
-Le moteur est représenté par un cylindre + une boîte (arbre), **pas un vrai
-modèle GLB**. C'est une hypothèse de la Phase 5 documentée explicitement,
-pas une fonctionnalité cachée comme "finie". Remplacer par un vrai modèle
-glTF/GLB optimisé (LOD, textures) est un travail ultérieur (Phase 9, gestion
-des packages/assets).
+### 3. Schéma Électrique Dynamique (Folio)
+* Affichage en direct du folio de puissance et de commande interactif.
+* Le schéma s'adapte automatiquement à la technologie de démarrage choisie.
+* Animation des flux de courant, fermeture des contacts, excitation des bobines et déclenchement des sécurités thermiques en direct.
 
-## Structure
+### 4. Système Expert & Pannes Aléatoires
+* **Pannes Électriques :** Perte de phase, défaut d'isolement (masse), chute de tension réseau.
+* **Pannes Mécaniques :** Balourd, défaut d'alignement, écaillage de roulement.
+* **Sécurité Industrielle :** Implémentation stricte des procédures de Consignation (LOTO) avec cadenas virtuel et interlocks (sécurités croisées).
 
+---
+
+## 🚀 Installation et Démarrage (Développement)
+
+Le projet est divisé en deux parties : un backend (API Python) et un frontend (Serveur Web).
+
+### Étape 1 : Lancer l'API Backend (Port 8000)
+Ouvrez un terminal et exécutez :
+```bash
+cd apps/api
+source venv/bin/activate  # Activer l'environnement virtuel
+DATABASE_URL="sqlite:///./vil_local.db" uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
-apps/web/
-├── index.html          # page + import map (résout "three" vers un CDN)
-├── package.json         # scripts npm (test, dev)
-├── src/
-│   ├── motorVisuals.js   # logique pure état -> visuel (testée)
-│   ├── apiClient.js       # client HTTP vers l'API (testé)
-│   └── main.js             # assemble Three.js + apiClient + DOM (non testé automatiquement)
-└── tests/
-    ├── motorVisuals.test.js
-    └── apiClient.test.js
+*(Sur GitHub Codespaces, assurez-vous que le port 8000 est défini sur **Public** dans l'onglet Ports).*
+
+### Étape 2 : Lancer le Frontend Web (Port 3000)
+Ouvrez un **deuxième terminal** et exécutez :
+```bash
+cd apps/web
+python3 -m http.server 3000
 ```
+Ouvrez ensuite l'URL du port 3000 dans votre navigateur. Le frontend détectera automatiquement l'URL de l'API.
+
+---
+
+## 🎓 Scénarios Pédagogiques Typiques
+
+1. **Le Piège du Broyeur :** Tentez de démarrer la charge "Broyeur" avec un Démarreur Progressif. Observez le moteur bloquer et la sécurité interne déclencher. Recommencez avec le Variateur (VFD) pour constater la maîtrise parfaite du couple sans pic de courant.
+2. **Diagnostic Vibratoire :** Démarrez le moteur, ouvrez le panneau FFT, et générez une panne mécanique "Balourd". Observez l'apparition du pic d'amplitude caractéristique à 1X RPM.
+3. **Recherche de Panne Électrique :** Générez une panne électrique aléatoire. Utilisez la consignation (LOTO) et le mégohmmètre pour prouver une fuite à la terre.
+
+---
+*Projet développé pour repousser les limites de la formation technique à distance.*

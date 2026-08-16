@@ -3,20 +3,52 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { createApiClient } from "./apiClient.js";
 
-const API_BASE_URL = window.VIL_API_BASE_URL;
-const api = createApiClient(API_BASE_URL);
-
+const API_BASE_URL = window.VIL_API_BASE_URL; const api = createApiClient(API_BASE_URL);
 let currentAssetId = null; let currentSessionId = null; let pollTimer = null;
 
+// ==========================================
+// DRAG & DROP SÉCURISÉ (Fix Fenêtres Disparues)
+// ==========================================
 function makeDraggable(panelId, headerId) {
-    const panel = document.getElementById(panelId); const header = document.getElementById(headerId);
+    const panel = document.getElementById(panelId); 
+    const header = document.getElementById(headerId);
     let isDragging = false, offsetX = 0, offsetY = 0;
-    header.addEventListener('mousedown', (e) => { isDragging = true; const rect = panel.getBoundingClientRect(); offsetX = e.clientX - rect.left; offsetY = e.clientY - rect.top; });
-    document.addEventListener('mousemove', (e) => { if (!isDragging) return; panel.style.left = (e.clientX - offsetX) + 'px'; panel.style.top = (e.clientY - offsetY) + 'px'; panel.style.bottom = 'auto'; panel.style.right = 'auto'; });
+
+    header.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        isDragging = true;
+        const rect = panel.getBoundingClientRect();
+        offsetX = e.clientX - rect.left;
+        offsetY = e.clientY - rect.top;
+        panel.style.position = 'fixed';
+        panel.style.bottom = 'auto';
+        panel.style.right = 'auto';
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        e.preventDefault();
+        
+        let newLeft = e.clientX - offsetX;
+        let newTop = e.clientY - offsetY;
+
+        // Clamping : Empêche la fenêtre de déborder de l'écran
+        const maxLeft = window.innerWidth - panel.offsetWidth;
+        const maxTop = window.innerHeight - panel.offsetHeight;
+
+        newLeft = Math.max(0, Math.min(maxLeft, newLeft));
+        newTop = Math.max(0, Math.min(maxTop, newTop));
+
+        panel.style.left = newLeft + 'px';
+        panel.style.top = newTop + 'px';
+    });
+
     document.addEventListener('mouseup', () => { isDragging = false; });
 }
+
 makeDraggable("oscilloscope-panel", "osc-header");
 makeDraggable("fft-panel", "fft-header");
+makeDraggable("schema-panel", "schema-header");
 
 document.getElementById('start-type').addEventListener('change', (e) => {
     const v = e.target.value;
@@ -24,7 +56,6 @@ document.getElementById('start-type').addEventListener('change', (e) => {
     document.getElementById('vfd-settings').style.display = (v === 'vfd' || v === 'soft_starter') ? 'block' : 'none';
     document.getElementById('group-freq').style.display = (v === 'vfd') ? 'block' : 'none';
 });
-
 document.getElementById('kt1-timer').addEventListener('input', (e) => document.getElementById('kt1-val').innerText = e.target.value + 's');
 document.getElementById('meter-mode').addEventListener('change', (e) => {
     const val = e.target.value;
@@ -33,6 +64,7 @@ document.getElementById('meter-mode').addEventListener('change', (e) => {
     document.getElementById('meter-display').innerText = (val === 'VIB') ? "FFT ACTIF" : "---";
 });
 
+// AUDIO
 const AudioContext = window.AudioContext || window.webkitAudioContext; let audioCtx;
 function initAudio() { if (!audioCtx) audioCtx = new AudioContext(); if (audioCtx.state === 'suspended') audioCtx.resume(); }
 document.body.addEventListener('click', initAudio, { once: true });
@@ -45,6 +77,7 @@ function playSound(type) {
     else if (type === 'megger') { osc.type = 'sine'; osc.frequency.setValueAtTime(2000, t); gain.gain.setValueAtTime(0.1, t); gain.gain.linearRampToValueAtTime(0.0, t + 0.5); osc.start(t); osc.stop(t + 0.5); }
 }
 
+// SCÈNE 3D
 const container = document.getElementById("scene-container"); const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 0.1, 100); camera.position.set(2.5, 1.8, 3.2);
 const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" }); renderer.setSize(window.innerWidth, window.innerHeight); renderer.shadowMap.enabled = true; container.appendChild(renderer.domElement);
@@ -53,6 +86,7 @@ scene.add(new THREE.AmbientLight(0xffffff, 0.7)); const dirLight = new THREE.Dir
 const floor = new THREE.Mesh(new THREE.PlaneGeometry(15, 15), new THREE.MeshStandardMaterial({ color: 0x1a1c22 })); floor.rotation.x = -Math.PI / 2; floor.position.y = -0.6; floor.receiveShadow = true; scene.add(floor);
 window.addEventListener('resize', () => { camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); });
 
+// MODÈLE PHYSIQUE & VARIABLES
 let realModelRoot = null; let statorMaterial = null;
 let motorConfig = { P_kw: 11, poles: 4, Ns: 1500, Nn: 1450, In: 20.0, loadType: 'pump_fan' };
 let motorPhys = { rpm: 0, current_true: 0, temp: 20.0 };
@@ -64,17 +98,15 @@ let timer_KT1 = 4.0;
 
 const oscCanvas = document.getElementById('osc-canvas'); const oscCtx = oscCanvas.getContext('2d'); let oscDataI = []; let oscDataN = [];
 const fftCanvas = document.getElementById('fft-canvas'); const fftCtx = fftCanvas.getContext('2d');
+const schemaCanvas = document.getElementById('schema-canvas'); const schemaCtx = schemaCanvas.getContext('2d');
 
 function updateMotorSpecs() {
-    motorConfig.P_kw = parseFloat(document.getElementById("np-power").value) || 11.0;
-    motorConfig.poles = parseInt(document.getElementById("np-poles").value) || 4;
-    motorConfig.loadType = document.getElementById("load-type").value;
-    motorConfig.Ns = (120 * 50) / motorConfig.poles; motorConfig.Nn = motorConfig.Ns * 0.96; motorConfig.In = motorConfig.P_kw * 1.85; 
+    motorConfig.P_kw = parseFloat(document.getElementById("np-power").value) || 11.0; motorConfig.poles = parseInt(document.getElementById("np-poles").value) || 4;
+    motorConfig.loadType = document.getElementById("load-type").value; motorConfig.Ns = (120 * 50) / motorConfig.poles; motorConfig.Nn = motorConfig.Ns * 0.96; motorConfig.In = motorConfig.P_kw * 1.85; 
     document.getElementById("dim-f1").value = motorConfig.In.toFixed(1); document.getElementById("dim-q1").value = (motorConfig.In * 1.2).toFixed(1);
     if(parseFloat(document.getElementById("vfd-power").value) < motorConfig.P_kw) document.getElementById("vfd-power").value = (motorConfig.P_kw * 1.2).toFixed(1);
 }
 
-// 🌟 BASE DE DONNÉES DES PANNES EXPERTES
 const DB_FAULTS = {
     "insulation": { type: "ELEC", title: "🛑 Défaut d'Isolement Stator", sym: "Le disjoncteur différentiel saute.", hint: "Mégohmmètre entre U1 et Terre.", lesson: "Vernis fondu (court-circuit à la carcasse). Testez au Mégohmmètre (Valeur < 1 MΩ)." },
     "phase_loss": { type: "ELEC", title: "⚠️ Perte de Phase L1", sym: "Le moteur grogne et chauffe énormément.", hint: "Vérifiez la tension (V AC) sur le bornier U1-V1-W1.", lesson: "Un câble réseau est rompu. Le moteur tourne sur 2 phases et tire I*sqrt(3)." },
@@ -87,10 +119,8 @@ const DB_FAULTS = {
 function triggerSmartFault(id, customTitle=null, customLesson=null) {
     if(currentFault) return; playSound('error'); currentFault = id;
     let title = customTitle, symptom = "Mise en sécurité.", hint = "Vérifiez les paramètres.", lesson = customLesson;
-    
-    if (DB_FAULTS[id]) {
-        title = DB_FAULTS[id].title; symptom = DB_FAULTS[id].sym; hint = DB_FAULTS[id].hint; lesson = DB_FAULTS[id].lesson;
-    } else if (id === "thermal_trip" && !customTitle) {
+    if (DB_FAULTS[id]) { title = DB_FAULTS[id].title; symptom = DB_FAULTS[id].sym; hint = DB_FAULTS[id].hint; lesson = DB_FAULTS[id].lesson; } 
+    else if (id === "thermal_trip" && !customTitle) {
         title = "🛑 DÉCLENCHEMENT THERMIQUE (F1)"; symptom = "Arrêt net. Courbe I²t dépassée.";
         if (currentStartMode === "star_delta" && timer_KT1 < 4.0) { hint = "Tempo KT1 trop courte."; lesson = "Passage Triangle prématuré = Pic de courant colossal."; } 
         else { hint = "Surcharge ou inertie trop forte."; lesson = "Le moteur tire trop de courant trop longtemps."; }
@@ -98,7 +128,6 @@ function triggerSmartFault(id, customTitle=null, customLesson=null) {
         title = "🛑 DÉFAUT SOFT-STARTER"; symptom = "Le démarreur a coupé avant la fin du démarrage."; hint = "Regardez la vitesse atteinte.";
         lesson = "La tension réduite du Soft-Starter ne fournit pas assez de couple pour vaincre l'inertie de cette charge lourde (Rotor quasi-bloqué). Le démarreur s'est mis en sécurité thermique interne (Start Time Exceeded).\n\n🛠️ ACTION : Utilisez un Variateur (VFD) ou démarrez en Direct.";
     }
-    
     document.getElementById("lm-title").innerText = title; document.getElementById("lm-symptom").innerText = symptom;
     document.getElementById("lm-hint").innerText = hint; document.getElementById("lm-lesson").innerText = lesson;
     document.getElementById("lesson-modal").style.display = "block"; log(`💥 Pannes/Diagnostic : ${title}`);
@@ -108,6 +137,180 @@ function triggerSecurityAlert(msg) { playSound('error'); log(msg); securityAlert
 function addProbe(tName) { if (probes.length >= 2) probes.shift(); if (!probes.includes(tName)) probes.push(tName); document.getElementById("probe-status").innerText = `Sondes : [ ${probes.join(" | ")} ]`; evaluateMeasurement(); }
 document.getElementById("btn-clear-probes").addEventListener("click", () => { probes = []; document.getElementById("probe-status").innerText = `Sondes : (Aucune)`; document.getElementById("meter-display").innerText = "0.00"; });
 function checkProbesSafety() { if (probes.length > 0) { triggerSecurityAlert("❌ SÉCURITÉ : Retirez les sondes avant de manipuler l'installation !"); return false; } return true; }
+
+// ==========================================
+// 🌟 FOLIO ÉLECTRIQUE INTELLIGENT ET DYNAMIQUE
+// ==========================================
+function drawSchematic() {
+    if(document.getElementById('schema-panel').style.display === 'none') return;
+    
+    schemaCtx.clearRect(0,0, schemaCanvas.width, schemaCanvas.height);
+    const isPowerOn = (lotoState === 0);
+    const isRunning = (currentSessionState.includes("run") || currentSessionState.includes("start")) && isPowerOn && !currentFault;
+    const isFault = (currentFault === "thermal_trip");
+
+    // Couleurs
+    const cPower = isPowerOn ? "#ff4444" : "#555"; 
+    const cRun = isRunning ? "#ff4444" : "#555";
+    const cCmd = isPowerOn ? "#ff00ff" : "#555"; 
+    const cGND = "#00ffff"; 
+    
+    schemaCtx.lineWidth = 2; schemaCtx.font = "10px Arial";
+
+    // --- MODE 1 : DÉMARRAGE DIRECT (DOL) ---
+    if (currentStartMode === "direct_star" || currentStartMode === "direct_delta") {
+        // PUISSANCE
+        schemaCtx.fillStyle = "#fff"; schemaCtx.fillText("PUISSANCE (DOL 400V)", 10, 20);
+        schemaCtx.strokeStyle = cPower;
+        for(let i=0; i<3; i++) { schemaCtx.beginPath(); schemaCtx.moveTo(20 + i*15, 30); schemaCtx.lineTo(20 + i*15, 50); schemaCtx.stroke(); }
+        
+        schemaCtx.fillStyle = "#fff"; schemaCtx.fillText("Q1", 70, 60);
+        for(let i=0; i<3; i++) { 
+            schemaCtx.beginPath(); schemaCtx.moveTo(20 + i*15, 50); schemaCtx.lineTo(20 + i*15 + (isPowerOn ? 0 : 6), 70); schemaCtx.stroke(); 
+            schemaCtx.beginPath(); schemaCtx.moveTo(20 + i*15, 70); schemaCtx.lineTo(20 + i*15, 90); schemaCtx.strokeStyle = isPowerOn ? cPower : "#555"; schemaCtx.stroke();
+        }
+
+        schemaCtx.fillStyle = "#fff"; schemaCtx.fillText("KM1", 70, 100);
+        for(let i=0; i<3; i++) { 
+            schemaCtx.beginPath(); schemaCtx.moveTo(20 + i*15, 90); schemaCtx.lineTo(20 + i*15 + (isRunning ? 0 : 6), 110); schemaCtx.stroke(); 
+            schemaCtx.beginPath(); schemaCtx.moveTo(20 + i*15, 110); schemaCtx.lineTo(20 + i*15, 130); schemaCtx.strokeStyle = isRunning ? cPower : "#555"; schemaCtx.stroke();
+        }
+
+        schemaCtx.fillStyle = "#fff"; schemaCtx.fillText("F1", 70, 140);
+        for(let i=0; i<3; i++) { 
+            schemaCtx.beginPath(); schemaCtx.rect(15 + i*15, 130, 10, 20); schemaCtx.stroke(); 
+            schemaCtx.beginPath(); schemaCtx.moveTo(20 + i*15, 150); schemaCtx.lineTo(20 + i*15, 180); schemaCtx.stroke();
+        }
+        schemaCtx.beginPath(); schemaCtx.arc(35, 200, 20, 0, 2*Math.PI); schemaCtx.stroke();
+        schemaCtx.fillStyle = isRunning ? "#0f0" : "#fff"; schemaCtx.fillText("M3~", 25, 205);
+
+        // COMMANDE
+        schemaCtx.fillStyle = "#fff"; schemaCtx.fillText("COMMANDE (24V DC)", 160, 20);
+        schemaCtx.strokeStyle = cCmd; schemaCtx.beginPath(); schemaCtx.moveTo(160, 30); schemaCtx.lineTo(320, 30); schemaCtx.stroke(); schemaCtx.fillText("+24V", 330, 33);
+        
+        // F1 (95-96 NF)
+        schemaCtx.beginPath(); schemaCtx.moveTo(200, 30); schemaCtx.lineTo(200, 50); schemaCtx.stroke();
+        schemaCtx.fillStyle = "#fff"; schemaCtx.fillText("F1 95-96", 215, 60);
+        schemaCtx.beginPath(); schemaCtx.moveTo(200, 50); schemaCtx.lineTo(200 + (isFault ? 8 : 0), 70); schemaCtx.stroke();
+        
+        let cmdLive = isPowerOn && !isFault;
+        schemaCtx.strokeStyle = cmdLive ? cCmd : "#555";
+        schemaCtx.beginPath(); schemaCtx.moveTo(200, 70); schemaCtx.lineTo(200, 90); schemaCtx.stroke();
+
+        // S0 (Arrêt NF)
+        schemaCtx.fillStyle = "#fff"; schemaCtx.fillText("S0 (Stop)", 215, 100);
+        schemaCtx.beginPath(); schemaCtx.moveTo(200, 90); schemaCtx.lineTo(200, 110); schemaCtx.stroke();
+        schemaCtx.beginPath(); schemaCtx.moveTo(200, 110); schemaCtx.lineTo(200, 130); schemaCtx.stroke();
+
+        // Branchement S1 / Auto-maintien KM1 13-14 (🌟 RIGOUREUSEMENT OUVERT À L'ARRÊT !)
+        schemaCtx.fillStyle = "#fff"; schemaCtx.fillText("S1 (Marche)", 235, 140);
+        schemaCtx.fillText("KM1 13-14", 125, 140);
+        
+        // S1 (Marche NO)
+        schemaCtx.beginPath(); schemaCtx.moveTo(200, 130); schemaCtx.lineTo(200 + 6, 150); schemaCtx.stroke();
+        
+        // Auto-maintien KM1 (NO) - Ouvert à l'arrêt !
+        schemaCtx.beginPath(); 
+        schemaCtx.moveTo(200, 120); schemaCtx.lineTo(170, 120); schemaCtx.lineTo(170, 130);
+        schemaCtx.lineTo(170 + (isRunning ? 0 : 6), 150); // Gap de 6px si arreté !
+        schemaCtx.lineTo(170, 160); schemaCtx.lineTo(200, 160); 
+        schemaCtx.stroke();
+
+        // Fil vers bobine KM1
+        let coilLive = cmdLive && isRunning;
+        schemaCtx.strokeStyle = coilLive ? cCmd : "#555";
+        schemaCtx.beginPath(); schemaCtx.moveTo(200, 150); schemaCtx.lineTo(200, 180); schemaCtx.stroke();
+        
+        // Bobine KM1 A1-A2
+        schemaCtx.beginPath(); schemaCtx.rect(190, 180, 20, 30); 
+        schemaCtx.fillStyle = coilLive ? "#ff00ff" : "transparent"; schemaCtx.fill(); schemaCtx.stroke();
+        schemaCtx.fillStyle = "#fff"; schemaCtx.fillText("KM1", 215, 200);
+
+        // Ligne 0V
+        schemaCtx.strokeStyle = cGND;
+        schemaCtx.beginPath(); schemaCtx.moveTo(200, 210); schemaCtx.lineTo(200, 230); schemaCtx.lineTo(320, 230); schemaCtx.stroke();
+        schemaCtx.fillText("0V", 330, 233);
+    } 
+    // --- MODE 2 : ÉTOILE-TRIANGLE (Y/Δ) ---
+    else if (currentStartMode === "star_delta") {
+        let isStarPhase = isRunning && timeInRunPhase < timer_KT1;
+        let isDeltaPhase = isRunning && timeInRunPhase >= timer_KT1;
+
+        schemaCtx.fillStyle = "#fff"; schemaCtx.fillText("PUISSANCE (Étoile-Triangle)", 10, 20);
+        schemaCtx.strokeStyle = cPower;
+        for(let i=0; i<3; i++) { schemaCtx.beginPath(); schemaCtx.moveTo(15+i*10, 30); schemaCtx.lineTo(15+i*10, 50); schemaCtx.stroke(); }
+        
+        // Q1
+        for(let i=0; i<3; i++) { schemaCtx.beginPath(); schemaCtx.moveTo(15+i*10, 50); schemaCtx.lineTo(15+i*10+(isPowerOn?0:5), 65); schemaCtx.stroke(); schemaCtx.beginPath(); schemaCtx.moveTo(15+i*10, 65); schemaCtx.lineTo(15+i*10, 80); schemaCtx.stroke(); }
+        
+        // KM1 (Ligne)
+        schemaCtx.fillText("KM1", 50, 90);
+        for(let i=0; i<3; i++) { schemaCtx.beginPath(); schemaCtx.moveTo(15+i*10, 80); schemaCtx.lineTo(15+i*10+(isRunning?0:5), 95); schemaCtx.stroke(); schemaCtx.beginPath(); schemaCtx.moveTo(15+i*10, 95); schemaCtx.lineTo(15+i*10, 110); schemaCtx.stroke(); }
+
+        // KM2 (Triangle) & KM3 (Étoile)
+        schemaCtx.fillText("KM2(Δ)", 65, 125); schemaCtx.fillText("KM3(Y)", 115, 125);
+        for(let i=0; i<3; i++) {
+            // KM2
+            schemaCtx.strokeStyle = isDeltaPhase ? cPower : "#555";
+            schemaCtx.beginPath(); schemaCtx.moveTo(60+i*10, 110); schemaCtx.lineTo(60+i*10+(isDeltaPhase?0:5), 125); schemaCtx.stroke();
+            // KM3
+            schemaCtx.strokeStyle = isStarPhase ? cPower : "#555";
+            schemaCtx.beginPath(); schemaCtx.moveTo(110+i*10, 110); schemaCtx.lineTo(110+i*10+(isStarPhase?0:5), 125); schemaCtx.stroke();
+        }
+
+        // Moteur M3~
+        schemaCtx.beginPath(); schemaCtx.arc(30, 150, 15, 0, 2*Math.PI); schemaCtx.strokeStyle = isRunning ? cPower : "#555"; schemaCtx.stroke();
+        schemaCtx.fillStyle = isRunning ? "#0f0" : "#fff"; schemaCtx.fillText("M3~", 22, 153);
+
+        // Commande Y/Δ
+        schemaCtx.fillStyle = "#fff"; schemaCtx.fillText("COMMANDE AUTOMATISÉE", 180, 20);
+        schemaCtx.strokeStyle = isPowerOn ? cCmd : "#555"; schemaCtx.beginPath(); schemaCtx.moveTo(180, 30); schemaCtx.lineTo(380, 30); schemaCtx.stroke();
+        
+        // Bobines KM1, KT1, KM3, KM2
+        schemaCtx.fillStyle = isRunning ? "#ff00ff" : "#555";
+        schemaCtx.fillText("KM1(Ligne)", 190, 180);
+        schemaCtx.fillText("KT1(Tempo)", 240, 180);
+        schemaCtx.fillStyle = isStarPhase ? "#ff00ff" : "#555"; schemaCtx.fillText("KM3(Y)", 295, 180);
+        schemaCtx.fillStyle = isDeltaPhase ? "#ff00ff" : "#555"; schemaCtx.fillText("KM2(Δ)", 340, 180);
+        
+        for(let x of [200, 250, 300, 350]) {
+            schemaCtx.beginPath(); schemaCtx.rect(x-10, 190, 20, 25); schemaCtx.strokeStyle = "#fff"; schemaCtx.stroke();
+            schemaCtx.beginPath(); schemaCtx.moveTo(x, 215); schemaCtx.lineTo(x, 230); schemaCtx.strokeStyle = cGND; schemaCtx.stroke();
+        }
+        schemaCtx.beginPath(); schemaCtx.moveTo(180, 230); schemaCtx.lineTo(380, 230); schemaCtx.stroke();
+    }
+    // --- MODE 3 : VARIATEUR (VFD) OU SOFT-STARTER ---
+    else {
+        let isVFD = (currentStartMode === "vfd");
+        schemaCtx.fillStyle = "#fff"; schemaCtx.fillText(isVFD ? "PUISSANCE (VFD / PWM)" : "PUISSANCE (SOFT-STARTER)", 10, 20);
+        schemaCtx.strokeStyle = cPower;
+        for(let i=0; i<3; i++) { schemaCtx.beginPath(); schemaCtx.moveTo(20+i*15, 30); schemaCtx.lineTo(20+i*15, 60); schemaCtx.stroke(); }
+        
+        // Q1
+        for(let i=0; i<3; i++) { schemaCtx.beginPath(); schemaCtx.moveTo(20+i*15, 60); schemaCtx.lineTo(20+i*15+(isPowerOn?0:5), 80); schemaCtx.stroke(); schemaCtx.beginPath(); schemaCtx.moveTo(20+i*15, 80); schemaCtx.lineTo(20+i*15, 100); schemaCtx.stroke(); }
+
+        // BLOC VFD / SOFT
+        schemaCtx.beginPath(); schemaCtx.rect(10, 100, 70, 60); schemaCtx.fillStyle = "rgba(0,255,255,0.1)"; schemaCtx.fill(); schemaCtx.strokeStyle = "#00ffff"; schemaCtx.stroke();
+        schemaCtx.fillStyle = "#fff"; schemaCtx.fillText(isVFD ? "VFD (=/~)" : "SOFT (⧻)", 15, 135);
+
+        // Sortie Moteur
+        for(let i=0; i<3; i++) { schemaCtx.beginPath(); schemaCtx.moveTo(20+i*15, 160); schemaCtx.lineTo(20+i*15, 180); schemaCtx.strokeStyle = isRunning ? cPower : "#555"; schemaCtx.stroke(); }
+        schemaCtx.beginPath(); schemaCtx.arc(35, 200, 18, 0, 2*Math.PI); schemaCtx.stroke();
+        schemaCtx.fillStyle = isRunning ? "#0f0" : "#fff"; schemaCtx.fillText("M3~", 25, 205);
+
+        // Bornier de commande VFD
+        schemaCtx.fillStyle = "#fff"; schemaCtx.fillText("BORNES CONTRÔLE VFD", 160, 20);
+        schemaCtx.strokeStyle = isPowerOn ? cCmd : "#555";
+        schemaCtx.beginPath(); schemaCtx.moveTo(180, 40); schemaCtx.lineTo(280, 40); schemaCtx.stroke(); schemaCtx.fillText("+24V Out", 290, 43);
+        schemaCtx.beginPath(); schemaCtx.moveTo(180, 80); schemaCtx.lineTo(180+(isRunning?0:6), 100); schemaCtx.stroke(); schemaCtx.fillText("LI1 (FWD)", 200, 90);
+        schemaCtx.beginPath(); schemaCtx.moveTo(180, 100); schemaCtx.lineTo(280, 100); schemaCtx.stroke();
+    }
+}
+
+// SCÈNE 3D CHARGEMENT ET INTERACTION
+const raycaster = new THREE.Raycaster(); 
+const mouse = new THREE.Vector2(); 
+const tooltip = document.getElementById("tooltip");
 
 async function loadRealMotorModel(assetId) {
   const url = `${API_BASE_URL}/api/assets/${assetId}/3d-model?cb=${Date.now()}`;
@@ -127,7 +330,6 @@ async function loadRealMotorModel(assetId) {
   realModelRoot.scale.set(1.5, 1.5, 1.5); const box = new THREE.Box3().setFromObject(realModelRoot); realModelRoot.position.set(0, -box.min.y - 0.6, 0); scene.add(realModelRoot);
 }
 
-const raycaster = new THREE.Raycaster(); const mouse = new THREE.Vector2(); const tooltip = document.getElementById("tooltip");
 container.addEventListener('mousemove', (e) => {
   mouse.x = (e.clientX / window.innerWidth) * 2 - 1; mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
   tooltip.style.left = e.clientX + 15 + 'px'; tooltip.style.top = e.clientY + 15 + 'px';
@@ -190,10 +392,7 @@ document.getElementById("btn-inject-meg").addEventListener("click", () => {
     }, 500); 
 });
 
-// ==========================================
-// BOUCLE PHYSIQUE EXPERTE
-// ==========================================
-let pulseClock = 0;
+// BOUCLE ANIMATION (60 FPS)
 function animate() {
   requestAnimationFrame(animate); controls.update(); 
   let now = performance.now(); let dt = (now - lastTime) / 1000; if (dt > 0.1) dt = 0.1; lastTime = now;
@@ -205,61 +404,38 @@ function animate() {
   let v_pwr = parseFloat(document.getElementById("vfd-power")?.value) || 15.0;
 
   let tau = 1.0; let I_steady = motorConfig.In; let RPM_steady = motorConfig.Nn;
-  switch(motorConfig.loadType) {
-     case 'no_load': tau = 0.2; I_steady = motorConfig.In * 0.35; break; 
-     case 'pump_fan': tau = 1.2; I_steady = motorConfig.In * 0.90; break; 
-     case 'conveyor': tau = 3.0; I_steady = motorConfig.In * 1.0; break; 
-     case 'crusher': tau = 10.0; I_steady = motorConfig.In * 1.15; break; 
-  }
-  
-  if (currentFault === "undervoltage") { RPM_steady *= 0.90; I_steady *= 1.15; } // Glisse plus, consomme plus
+  switch(motorConfig.loadType) { case 'no_load': tau = 0.2; I_steady = motorConfig.In * 0.35; break; case 'pump_fan': tau = 1.2; I_steady = motorConfig.In * 0.90; break; case 'conveyor': tau = 3.0; I_steady = motorConfig.In * 1.0; break; case 'crusher': tau = 10.0; I_steady = motorConfig.In * 1.15; break; }
+  if (currentFault === "undervoltage") { RPM_steady *= 0.90; I_steady *= 1.15; } 
 
   if (isCommandedToRun) {
       timeInRunPhase += dt; let targetRPMPhase = RPM_steady; let Id_multiplier = 6.0; 
-
       if (currentStartMode === "star_delta") {
           if (timeInRunPhase < timer_KT1) { targetRPMPhase = RPM_steady * 0.80; if (motorConfig.loadType === 'crusher' || motorConfig.loadType === 'conveyor') targetRPMPhase = RPM_steady * 0.15; Id_multiplier = 2.0; } 
           else { if (timeInRunPhase > timer_KT1 && timeInRunPhase < timer_KT1 + 0.05) playSound('contactor_on'); targetRPMPhase = RPM_steady; Id_multiplier = (motorPhys.rpm < RPM_steady * 0.70) ? 5.0 : 3.5; }
       } 
-      // 🌟 VRAI COMPORTEMENT SOFT-STARTER
       else if (currentStartMode === "soft_starter") {
-          if (timeInRunPhase < v_ramp) {
-              Id_multiplier = 3.0; targetRPMPhase = RPM_steady * 0.9;
-              if (motorConfig.loadType === 'crusher') targetRPMPhase = RPM_steady * 0.15; // N'y arrive pas !
-          } else {
-              if (motorPhys.rpm < RPM_steady * 0.8) {
-                  triggerSmartFault("soft_trip"); // 🛑 Sanction Soft-Starter
-              } else { targetRPMPhase = RPM_steady; Id_multiplier = 3.5; }
-          }
+          if (timeInRunPhase < v_ramp) { Id_multiplier = 3.0; targetRPMPhase = RPM_steady * 0.9; if (motorConfig.loadType === 'crusher') targetRPMPhase = RPM_steady * 0.15; } 
+          else { if (motorPhys.rpm < RPM_steady * 0.8) { triggerSmartFault("soft_trip"); } else { targetRPMPhase = RPM_steady; Id_multiplier = 3.5; } }
       }
       else if (currentStartMode === "vfd") {
           if (v_pwr < motorConfig.P_kw) triggerSmartFault("vfd_ocf", "🛑 DÉFAUT VFD (OCF)", "Variateur sous-dimensionné. Surintensité interne.");
           let current_hz = (timeInRunPhase < v_ramp) ? (timeInRunPhase / v_ramp) * v_freq : v_freq;
-          let Ns_vfd = (120 * current_hz) / motorConfig.poles;
-          targetRPMPhase = Ns_vfd * 0.96; Id_multiplier = 1.2; 
-          motorPhys.rpm = targetRPMPhase; 
+          targetRPMPhase = ((120 * current_hz) / motorConfig.poles) * 0.96; Id_multiplier = 1.2; motorPhys.rpm = targetRPMPhase; 
       }
 
-      if(currentStartMode !== "vfd") {
-          motorPhys.rpm += (targetRPMPhase - motorPhys.rpm) * (dt / tau);
-          if (motorPhys.rpm > targetRPMPhase) motorPhys.rpm = targetRPMPhase;
-      }
+      if(currentStartMode !== "vfd") { motorPhys.rpm += (targetRPMPhase - motorPhys.rpm) * (dt / tau); if (motorPhys.rpm > targetRPMPhase) motorPhys.rpm = targetRPMPhase; }
 
       if(currentStartMode !== "vfd") {
           let slip = 1.0 - (motorPhys.rpm / RPM_steady); if (slip < 0) slip = 0;
-          let currentFactor = Math.pow(slip, 1.2); 
-          motorPhys.current_true = I_steady + (motorConfig.In * Id_multiplier - I_steady) * currentFactor;
+          let currentFactor = Math.pow(slip, 1.2); motorPhys.current_true = I_steady + (motorConfig.In * Id_multiplier - I_steady) * currentFactor;
           if (slip <= 0.01) { motorPhys.current_true = I_steady + (Math.random()-0.5)*0.2; motorPhys.rpm = RPM_steady + (Math.random()-0.5)*1.5; }
       } else {
-          let loadRatio = motorPhys.rpm / motorConfig.Nn;
-          motorPhys.current_true = (I_steady * loadRatio) + (motorConfig.In * 0.3) + (Math.random()-0.5)*0.1;
+          let loadRatio = motorPhys.rpm / motorConfig.Nn; motorPhys.current_true = (I_steady * loadRatio) + (motorConfig.In * 0.3) + (Math.random()-0.5)*0.1;
       }
       if (currentFault === "phase_loss") { motorPhys.current_true = I_steady * 1.73; motorPhys.rpm = RPM_steady * 0.90; }
 
   } else {
-      timeInRunPhase = 0; motorPhys.current_true = 0;
-      motorPhys.rpm += (0 - motorPhys.rpm) * (dt / (tau * 0.5)); 
-      if (motorPhys.rpm < 2) motorPhys.rpm = 0;
+      timeInRunPhase = 0; motorPhys.current_true = 0; motorPhys.rpm += (0 - motorPhys.rpm) * (dt / (tau * 0.5)); if (motorPhys.rpm < 2) motorPhys.rpm = 0;
   }
 
   meterDisplayCurrent += (motorPhys.current_true - meterDisplayCurrent) * (dt / 0.2);
@@ -270,51 +446,41 @@ function animate() {
   motorPhys.temp += tempDelta; if (motorPhys.temp < 20) motorPhys.temp = 20;
   if (motorPhys.temp >= 140 && !currentFault) triggerSmartFault("thermal_trip");
 
-  // OSCILLOSCOPE
-  oscDataI.push(motorPhys.current_true); oscDataN.push(motorPhys.rpm);
-  if(oscDataI.length > 280) { oscDataI.shift(); oscDataN.shift(); }
-  oscCtx.clearRect(0,0, oscCanvas.width, oscCanvas.height);
-  oscCtx.beginPath(); oscCtx.strokeStyle = '#00ffff'; oscCtx.lineWidth = 2;
-  for(let i=0; i<oscDataN.length; i++) { let x=(i/280)*oscCanvas.width; let y=oscCanvas.height-(oscDataN[i]/3000)*oscCanvas.height; if(i===0) oscCtx.moveTo(x,y); else oscCtx.lineTo(x,y); } oscCtx.stroke();
-  oscCtx.beginPath(); oscCtx.strokeStyle = '#ffaa00'; oscCtx.lineWidth = 2;
-  let maxI = motorConfig.In * 8;
-  for(let i=0; i<oscDataI.length; i++) { let x=(i/280)*oscCanvas.width; let y=oscCanvas.height-(oscDataI[i]/maxI)*oscCanvas.height; if(i===0) oscCtx.moveTo(x,y); else oscCtx.lineTo(x,y); } oscCtx.stroke();
+  if(document.getElementById('oscilloscope-panel').style.display !== 'none') {
+      oscDataI.push(motorPhys.current_true); oscDataN.push(motorPhys.rpm);
+      if(oscDataI.length > 280) { oscDataI.shift(); oscDataN.shift(); }
+      oscCtx.clearRect(0,0, oscCanvas.width, oscCanvas.height);
+      oscCtx.beginPath(); oscCtx.strokeStyle = '#00ffff'; oscCtx.lineWidth = 2;
+      for(let i=0; i<oscDataN.length; i++) { let x=(i/280)*oscCanvas.width; let y=oscCanvas.height-(oscDataN[i]/3000)*oscCanvas.height; if(i===0) oscCtx.moveTo(x,y); else oscCtx.lineTo(x,y); } oscCtx.stroke();
+      oscCtx.beginPath(); oscCtx.strokeStyle = '#ffaa00'; oscCtx.lineWidth = 2;
+      let maxI = motorConfig.In * 8;
+      for(let i=0; i<oscDataI.length; i++) { let x=(i/280)*oscCanvas.width; let y=oscCanvas.height-(oscDataI[i]/maxI)*oscCanvas.height; if(i===0) oscCtx.moveTo(x,y); else oscCtx.lineTo(x,y); } oscCtx.stroke();
+  }
 
-  // 🌟 ANALYSEUR VIBRATOIRE (FFT RÉALISTE)
   if (document.getElementById('meter-mode').value === 'VIB') {
-      fftCtx.clearRect(0,0, fftCanvas.width, fftCanvas.height);
-      fftCtx.strokeStyle = '#444'; fftCtx.lineWidth = 1;
+      fftCtx.clearRect(0,0, fftCanvas.width, fftCanvas.height); fftCtx.strokeStyle = '#444'; fftCtx.lineWidth = 1;
       for(let i=0; i<5; i++) { let x = (i/5)*fftCanvas.width; fftCtx.beginPath(); fftCtx.moveTo(x,0); fftCtx.lineTo(x,fftCanvas.height); fftCtx.stroke(); }
-      
       fftCtx.beginPath(); fftCtx.strokeStyle = '#0f0'; fftCtx.lineWidth = 2;
-      let f_rot = motorPhys.rpm / 60; // 1X RPM en Hz
-      
+      let f_rot = motorPhys.rpm / 60; 
       for(let x=0; x<fftCanvas.width; x++) {
-          let hz = (x / fftCanvas.width) * 200; // 0 à 200 Hz
-          let amplitude = 1.0 + Math.random()*0.5; // Bruit
-          
+          let hz = (x / fftCanvas.width) * 200; let amplitude = 1.0 + Math.random()*0.5; 
           if (f_rot > 5) {
-              if (Math.abs(hz - f_rot) < 2) amplitude += 5.0; // 1X naturel
-              if (currentFault === "mech_unbalance" && Math.abs(hz - f_rot) < 3) amplitude += 40.0; // Balourd
-              if (currentFault === "mech_misalign") {
-                  if (Math.abs(hz - f_rot) < 3) amplitude += 20.0;
-                  if (Math.abs(hz - f_rot*2) < 3) amplitude += 30.0; // 2X fort
-              }
-              if (currentFault === "mech_bearing" && hz > 100 && hz < 150) {
-                  if(Math.random() > 0.8) amplitude += 25.0; // Bruit HF écaillage
-              }
+              if (Math.abs(hz - f_rot) < 2) amplitude += 5.0; 
+              if (currentFault === "mech_unbalance" && Math.abs(hz - f_rot) < 3) amplitude += 40.0; 
+              if (currentFault === "mech_misalign") { if (Math.abs(hz - f_rot) < 3) amplitude += 20.0; if (Math.abs(hz - f_rot*2) < 3) amplitude += 30.0; }
+              if (currentFault === "mech_bearing" && hz > 100 && hz < 150) { if(Math.random() > 0.8) amplitude += 25.0; }
           }
           let y = fftCanvas.height - Math.min(amplitude, fftCanvas.height);
           if(x===0) fftCtx.moveTo(x,y); else fftCtx.lineTo(x,y);
-      }
-      fftCtx.stroke();
+      } fftCtx.stroke();
   }
 
-  // UI
+  drawSchematic();
+
   const elSpeed = document.getElementById("m-speed"); if(elSpeed) elSpeed.textContent = Math.round(motorPhys.rpm);
   const elCurrent = document.getElementById("m-current"); if(elCurrent) elCurrent.textContent = meterDisplayCurrent.toFixed(1); 
   const elTemp = document.getElementById("m-temp"); if(elTemp) elTemp.textContent = motorPhys.temp.toFixed(1);
-  evaluateMeasurement(); // Update voltmetre
+  evaluateMeasurement();
 
   if (realModelRoot) {
     const rotor = realModelRoot.getObjectByName("RotorAssembly");
@@ -334,24 +500,18 @@ function animate() {
 }
 animate();
 
-// ==========================================
-// EVENTS & UI - GÉNÉRATEUR PANNES ALÉATOIRES
-// ==========================================
+// EVENTS & UI
 function updateMeasurementsPanel(session) { currentSessionState = session.state; evaluateMeasurement(); }
 function log(msg) { console.log(msg); const line = document.createElement("div"); line.textContent = `> ${msg}`; document.getElementById("log-panel")?.prepend(line); }
 
 document.getElementById("btn-rand-elec").addEventListener("click", () => {
     if (!currentSessionId || lotoState !== 0) return triggerSecurityAlert("Le TGBT doit être alimenté !");
-    const faults = ["insulation", "phase_loss", "undervoltage"];
-    triggerSmartFault(faults[Math.floor(Math.random() * faults.length)]);
+    const faults = ["insulation", "phase_loss", "undervoltage"]; triggerSmartFault(faults[Math.floor(Math.random() * faults.length)]);
 });
-
 document.getElementById("btn-rand-mech").addEventListener("click", () => {
-    if (!currentSessionId || motorPhys.rpm < 100) return triggerSecurityAlert("Le moteur doit tourner pour créer une panne mécanique !");
-    const faults = ["mech_unbalance", "mech_misalign", "mech_bearing"];
-    triggerSmartFault(faults[Math.floor(Math.random() * faults.length)]);
+    if (!currentSessionId || motorPhys.rpm < 100) return triggerSecurityAlert("Le moteur doit tourner !");
+    const faults = ["mech_unbalance", "mech_misalign", "mech_bearing"]; triggerSmartFault(faults[Math.floor(Math.random() * faults.length)]);
 });
-
 document.getElementById("lm-close").addEventListener("click", () => document.getElementById("lesson-modal").style.display = "none");
 
 async function generateMotor(isAuto) {
@@ -377,7 +537,7 @@ document.getElementById("btn-login").addEventListener("click", async () => {
     await api.registerAndLogin(document.getElementById("email").value, document.getElementById("password").value);
     document.getElementById("auth-status").textContent = `Connecté`; document.getElementById("auth-status").style.background = "#107c10";
     log("✅ Authentification réussie."); await generateMotor(true);
-  } catch (e) { alert(`Échec de connexion : ${e.message}`); } finally { btn.innerText = "Connexion"; btn.disabled = false; }
+  } catch (e) { alert(`Échec : ${e.message}`); } finally { btn.innerText = "Connexion"; btn.disabled = false; }
 });
 document.getElementById("btn-generate").addEventListener("click", () => generateMotor(false));
 
@@ -407,7 +567,7 @@ document.getElementById("btn-reset-fault").addEventListener("click", async () =>
       const newSession = await api.createSession({ asset_id: currentAssetId });
       currentSessionId = newSession.id; currentSessionState = "stopped"; currentFault = null; timeInRunPhase = 0;
       if(motorPhys.temp > 60) motorPhys.temp = 50.0; 
-      log("✅ Réarmement réussi. Suivez les recommandations avant redémarrage."); updateMeasurementsPanel(newSession);
+      log("✅ Réarmement réussi."); updateMeasurementsPanel(newSession);
   } catch(e) { log("❌ Erreur serveur."); } finally { startPolling(); }
 });
 

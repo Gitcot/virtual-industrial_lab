@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Laboratoire Industriel VR - V3.0 (Système Expert)</title>
+    <title>Laboratoire Industriel VR - V4.1 (Folio Dynamique)</title>
     <link rel="stylesheet" href="/src/style.css">
     
     <script>
@@ -23,13 +23,24 @@
       }
     </script>
     <style>
-        .floating-panel { position: absolute; background: rgba(10, 15, 25, 0.95); border: 1px solid #444; border-radius: 8px; z-index: 1000; box-shadow: 0 0 20px rgba(0,255,255,0.15); display: flex; flex-direction: column; }
-        .panel-header { cursor: grab; background: #222; padding: 6px; text-align: center; border-bottom: 1px solid #444; border-radius: 8px 8px 0 0; user-select: none; font-size:12px; color:#fff;}
+        /* Position FIXED pour empêcher la disparition des fenêtres */
+        .floating-panel { 
+            position: fixed; background: rgba(10, 15, 25, 0.95); border: 1px solid #444; 
+            border-radius: 8px; z-index: 1000; box-shadow: 0 0 20px rgba(0,255,255,0.2); 
+            display: flex; flex-direction: column; 
+        }
+        .panel-header { 
+            cursor: grab; background: #222; padding: 6px 10px; text-align: center; 
+            border-bottom: 1px solid #444; border-radius: 8px 8px 0 0; user-select: none; 
+            font-size:12px; color:#fff; display: flex; justify-content: space-between; align-items: center;
+        }
         .panel-header:active { cursor: grabbing; }
         canvas { background: #000; border-bottom: 1px solid #444; padding: 5px;}
         .btn-remove-probes { background: #d35400; color: white; border: none; padding: 5px; border-radius: 3px; cursor: pointer; font-size: 10px; margin-top: 5px;}
         .btn-remove-probes:hover { background: #e67e22; }
         .sub-panel { display:none; background:rgba(0,255,255,0.1); padding:8px; border-radius:5px; margin-top:5px; border:1px solid #00ffff55; }
+        .btn-toggle-panel { background: #2980b9; color: white; border: none; padding: 5px; border-radius: 3px; cursor: pointer; font-size: 11px; width: 100%; margin-top: 5px;}
+        .btn-toggle-panel:hover { background: #8e44ad; }
     </style>
 </head>
 <body>
@@ -82,19 +93,16 @@
                     <option value="soft_starter">Démarreur Progressif (Soft)</option>
                     <option value="vfd">Variateur de Vitesse (VFD)</option>
                 </select>
-                
                 <div class="form-group" id="group-kt1" style="margin-top:5px;">
                     <label style="color:#ffaa00;">Tempo KT1 (s)</label>
                     <input type="range" id="kt1-timer" min="1" max="15" value="4" style="width:40%;">
                     <span id="kt1-val" style="font-size:12px; color:white;">4s</span>
                 </div>
-
                 <div id="vfd-settings" class="sub-panel">
                     <div class="form-group"><label style="color:#00ffff;">Calibre Électronique (kW)</label><input type="number" id="vfd-power" value="15.0" /></div>
                     <div class="form-group"><label>Temps de Rampe (s)</label><input type="number" id="vfd-ramp" value="8.0" /></div>
                     <div class="form-group" id="group-freq"><label>Consigne Fréquence (Hz)</label><input type="number" id="vfd-freq" value="50.0" /></div>
                 </div>
-
                 <button id="btn-generate" class="btn-warning" style="margin-top:10px;">Appliquer Ingénierie</button>
             </div>
         </details>
@@ -118,17 +126,18 @@
                     <option value="MEG">Mégohmmètre (Isolement)</option>
                     <option value="VIB">Analyseur Vibratoire (FFT)</option>
                 </select>
-                
                 <div id="meg-options" class="sub-panel">
                     <label style="font-size:11px;">Tension d'injection (DC) :</label>
                     <select id="meg-voltage" style="padding:2px; font-size:11px;"><option value="500" selected>500 V</option><option value="1000">1000 V</option></select>
                     <button id="btn-inject-meg" style="font-size:10px; padding:2px; background:#ff4444; color:white; border:none; border-radius:3px;">INJECTER</button>
                 </div>
-
                 <div class="measure-box"><span id="meter-display">0.00</span></div>
                 <div id="probe-status" style="font-size: 11px; color: #aaa; text-align: center;">Branchez les sondes (0/2)</div>
                 <button id="btn-clear-probes" class="btn-remove-probes">Retirer toutes les sondes</button>
-                <label style="font-size: 11px; color: #ffaa00; margin-top:5px; display:block;"><input type="checkbox" id="bypass-mode"> ⚠️ Clé Bypass Maint.</label>
+                
+                <hr style="border-color:#444; margin:10px 0;">
+                <button class="btn-toggle-panel" onclick="document.getElementById('schema-panel').style.display='flex'">🗺️ Afficher Schéma Électrique</button>
+                <button class="btn-toggle-panel" onclick="document.getElementById('oscilloscope-panel').style.display='flex'">📈 Afficher Oscilloscope</button>
             </div>
         </details>
 
@@ -152,16 +161,33 @@
         </details>
     </div>
 
-    <div id="oscilloscope-panel" class="floating-panel" style="bottom: 20px; left: 20px;">
-        <div class="panel-header" id="osc-header">📈 Oscilloscope</div>
+    <!-- SCHÉMA ÉLECTRIQUE FLOTTANT -->
+    <div id="schema-panel" class="floating-panel" style="top: 20px; left: 20px; display:none;">
+        <div class="panel-header" id="schema-header">
+            <span>🗺️ Folio Électrique Dynamique</span>
+            <button onclick="document.getElementById('schema-panel').style.display='none'" style="background:none; border:none; color:#ff4444; font-weight:bold; cursor:pointer;">✖</button>
+        </div>
+        <canvas id="schema-canvas" width="400" height="270"></canvas>
+    </div>
+
+    <!-- OSCILLOSCOPE FLOTTANT -->
+    <div id="oscilloscope-panel" class="floating-panel" style="bottom: 20px; left: 20px; display:none;">
+        <div class="panel-header" id="osc-header">
+            <span>📈 Oscilloscope Transitoire</span>
+            <button onclick="document.getElementById('oscilloscope-panel').style.display='none'" style="background:none; border:none; color:#ff4444; font-weight:bold; cursor:pointer;">✖</button>
+        </div>
         <canvas id="osc-canvas" width="280" height="120"></canvas>
         <div style="font-size: 11px; display: flex; justify-content: space-between; padding: 5px 10px;">
             <span style="color:#ffaa00;">■ Courant I (A)</span><span style="color:#00ffff;">■ Vitesse N (tr/min)</span>
         </div>
     </div>
 
+    <!-- SPECTRE FFT FLOTTANT -->
     <div id="fft-panel" class="floating-panel" style="bottom: 20px; right: 20px; display:none;">
-        <div class="panel-header" id="fft-header">📉 Spectre FFT (Vibrations)</div>
+        <div class="panel-header" id="fft-header">
+            <span>📉 Spectre FFT (Vibrations)</span>
+            <button onclick="document.getElementById('fft-panel').style.display='none'" style="background:none; border:none; color:#ff4444; font-weight:bold; cursor:pointer;">✖</button>
+        </div>
         <canvas id="fft-canvas" width="280" height="120"></canvas>
         <div style="font-size: 11px; display: flex; justify-content: space-between; padding: 5px 10px;">
             <span style="color:#fff;">Hz (Fréquence) ➔</span><span style="color:#0f0;">Amplitude (mm/s)</span>
