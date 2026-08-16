@@ -2,27 +2,16 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Laboratoire Industriel VR</title>
+    <title>Laboratoire Industriel VR - V3.0 (Système Expert)</title>
     <link rel="stylesheet" href="/src/style.css">
     
-    <!-- Mouchard anti-crash -->
-    <!-- ⚠️ MOUCHARD ANTI-CRASH ET DETECTION AUTO DE L'API -->
     <script>
-        window.addEventListener('error', function(e) {
-            alert("⚠️ ERREUR CRITIQUE JS :\n" + e.message + "\nFichier: " + e.filename + "\nLigne: " + e.lineno);
-        });
-
-        // 🌟 DÉTECTION AUTOMATIQUE DE TON SERVEUR GITHUB CODESPACES 🌟
+        window.addEventListener('error', function(e) { alert("⚠️ ERREUR CRITIQUE JS :\n" + e.message + "\nLigne: " + e.lineno); });
         let currentHost = window.location.hostname; 
         if (currentHost.includes("-3000")) {
-            // Transforme automatiquement l'URL du port 3000 vers le port 8000
             let backendHost = currentHost.replace("-3000", "-8000");
             window.VIL_API_BASE_URL = window.location.protocol + "//" + backendHost;
-        } else {
-            // Sécurité si tu lances en local sur ton PC
-            window.VIL_API_BASE_URL = "http://localhost:8000"; 
-        }
-        console.log("📡 URL du Serveur API détectée :", window.VIL_API_BASE_URL);
+        } else { window.VIL_API_BASE_URL = "http://localhost:8000"; }
     </script>
     
     <script type="importmap">
@@ -34,21 +23,13 @@
       }
     </script>
     <style>
-        #oscilloscope-panel {
-            position: absolute; bottom: 20px; left: 20px; 
-            background: rgba(10, 15, 25, 0.95);
-            border: 1px solid #444; border-radius: 8px; z-index: 1000;
-            box-shadow: 0 0 20px rgba(0,255,255,0.15); display: flex; flex-direction: column;
-        }
-        #osc-header {
-            cursor: grab; background: #222; padding: 6px; text-align: center;
-            border-bottom: 1px solid #444; border-radius: 8px 8px 0 0; user-select: none;
-        }
-        #osc-header:active { cursor: grabbing; }
+        .floating-panel { position: absolute; background: rgba(10, 15, 25, 0.95); border: 1px solid #444; border-radius: 8px; z-index: 1000; box-shadow: 0 0 20px rgba(0,255,255,0.15); display: flex; flex-direction: column; }
+        .panel-header { cursor: grab; background: #222; padding: 6px; text-align: center; border-bottom: 1px solid #444; border-radius: 8px 8px 0 0; user-select: none; font-size:12px; color:#fff;}
+        .panel-header:active { cursor: grabbing; }
         canvas { background: #000; border-bottom: 1px solid #444; padding: 5px;}
-        .osc-legend { font-size: 11px; display: flex; justify-content: space-between; padding: 5px 10px; }
         .btn-remove-probes { background: #d35400; color: white; border: none; padding: 5px; border-radius: 3px; cursor: pointer; font-size: 10px; margin-top: 5px;}
         .btn-remove-probes:hover { background: #e67e22; }
+        .sub-panel { display:none; background:rgba(0,255,255,0.1); padding:8px; border-radius:5px; margin-top:5px; border:1px solid #00ffff55; }
     </style>
 </head>
 <body>
@@ -66,26 +47,26 @@
         <p><strong>Symptôme :</strong> <span id="lm-symptom">...</span></p>
         <p><strong>💡 Indice :</strong> <span id="lm-hint">...</span></p>
         <hr style="border-color:#555;">
-        <p style="font-size: 12px; color: #aaa;"><strong>📚 Cours :</strong> <span id="lm-lesson">...</span></p>
-        <button id="lm-close" style="background:#555; margin-top:10px;">Compris, je réarme</button>
+        <p style="font-size: 12px; color: #aaa;"><strong>🛠️ Action & Explication :</strong> <span id="lm-lesson">...</span></p>
+        <button id="lm-close" style="background:#555; margin-top:10px;">Compris, je ferme</button>
     </div>
 
-    <div id="ui-panel" style="max-height: 95vh; overflow-y: auto;">
+    <div id="ui-panel" style="max-height: 95vh; overflow-y: auto; z-index:500;">
         <h2 style="margin: 0 0 15px 0; font-size: 18px; text-align: center; color: #00ffff;">⚡ Labo Industriel VR</h2>
         
         <details open>
             <summary>1. Connexion <span id="auth-status" class="badge">Déconnecté</span></summary>
             <div class="details-content">
-                <input type="text" id="email" value="etudiant@vil.com" />
+                <input type="text" id="email" value="expert@vil.com" />
                 <input type="password" id="password" value="azerty" />
                 <button id="btn-login">Connexion & Initialisation</button>
             </div>
         </details>
 
         <details>
-            <summary>2. Paramètres & Couplage</summary>
+            <summary>2. Ingénierie & Couplage</summary>
             <div class="details-content">
-                <div class="form-group"><label>Puissance (kW)</label><input type="number" id="np-power" value="11.0" /></div>
+                <div class="form-group"><label>Puissance Moteur (kW)</label><input type="number" id="np-power" value="11.0" /></div>
                 <div class="form-group"><label>Pôles</label><input type="number" id="np-poles" value="4" /></div>
                 <select id="load-type">
                     <option value="no_load">À vide</option>
@@ -93,105 +74,101 @@
                     <option value="conveyor">Charge Constante (Convoyeur)</option>
                     <option value="crusher">Forte Inertie (Broyeur)</option>
                 </select>
-                <label style="font-size: 12px; color: #00ffff; margin-top: 5px;">Configuration Armoire :</label>
+                <label style="font-size: 12px; color: #00ffff; margin-top: 5px;">Technologie Démarrage :</label>
                 <select id="start-type">
                     <option value="direct_star">Démarrage Direct (Étoile)</option>
                     <option value="direct_delta">Démarrage Direct (Triangle)</option>
                     <option value="star_delta">Démarrage Étoile-Triangle</option>
+                    <option value="soft_starter">Démarreur Progressif (Soft)</option>
+                    <option value="vfd">Variateur de Vitesse (VFD)</option>
                 </select>
-                <div class="form-group" style="margin-top:5px;">
-                    <label style="color:#ffaa00;">Réglage Tempo KT1</label>
+                
+                <div class="form-group" id="group-kt1" style="margin-top:5px;">
+                    <label style="color:#ffaa00;">Tempo KT1 (s)</label>
                     <input type="range" id="kt1-timer" min="1" max="15" value="4" style="width:40%;">
                     <span id="kt1-val" style="font-size:12px; color:white;">4s</span>
                 </div>
-                <button id="btn-generate" class="btn-warning">Appliquer Paramètres Moteur</button>
+
+                <div id="vfd-settings" class="sub-panel">
+                    <div class="form-group"><label style="color:#00ffff;">Calibre Électronique (kW)</label><input type="number" id="vfd-power" value="15.0" /></div>
+                    <div class="form-group"><label>Temps de Rampe (s)</label><input type="number" id="vfd-ramp" value="8.0" /></div>
+                    <div class="form-group" id="group-freq"><label>Consigne Fréquence (Hz)</label><input type="number" id="vfd-freq" value="50.0" /></div>
+                </div>
+
+                <button id="btn-generate" class="btn-warning" style="margin-top:10px;">Appliquer Ingénierie</button>
             </div>
         </details>
 
         <details>
-            <summary>3. Dimensionnement Protections</summary>
+            <summary>3. Protections (Sizing)</summary>
             <div class="details-content">
-                <p style="font-size:10px; color:#aaa; margin:0 0 5px 0;">Calculez les valeurs selon le In du moteur.</p>
-                <div class="form-group">
-                    <label>Calibre Disjoncteur Q1 (A)</label>
-                    <input type="number" id="dim-q1" value="25.0" step="0.5"/>
-                </div>
-                <div class="form-group">
-                    <label>Réglage Thermique F1 (A)</label>
-                    <input type="number" id="dim-f1" value="22.0" step="0.5"/>
-                </div>
+                <div class="form-group"><label>Calibre Disjoncteur Q1 (A)</label><input type="number" id="dim-q1" value="25.0" step="0.5"/></div>
+                <div class="form-group"><label>Réglage Thermique F1 (A)</label><input type="number" id="dim-f1" value="22.0" step="0.5"/></div>
             </div>
         </details>
 
         <details open>
-            <summary>4. Mesures & Appareillages</summary>
+            <summary>4. Métrologie & CND</summary>
             <div class="details-content">
                 <select id="meter-mode">
                     <option value="NONE">-- Appareil Éteint --</option>
-                    <option value="V_AC">Voltmètre 400V AC (Puissance)</option>
-                    <option value="V_DC">Voltmètre 24V DC (Commande)</option>
+                    <option value="V_AC">Voltmètre 400V AC</option>
+                    <option value="V_DC">Voltmètre 24V DC</option>
                     <option value="OHM">Ohmmètre / Continuité</option>
                     <option value="MEG">Mégohmmètre (Isolement)</option>
+                    <option value="VIB">Analyseur Vibratoire (FFT)</option>
                 </select>
                 
-                <div id="meg-options" style="display:none; margin-top:5px;">
+                <div id="meg-options" class="sub-panel">
                     <label style="font-size:11px;">Tension d'injection (DC) :</label>
-                    <select id="meg-voltage" style="padding:2px; font-size:11px;">
-                        <option value="50">50 V</option>
-                        <option value="250">250 V</option>
-                        <option value="500" selected>500 V</option>
-                        <option value="1000">1000 V</option>
-                    </select>
-                    <button id="btn-inject-meg" style="font-size:10px; padding:2px; background:#ff4444; color:white; border:none; border-radius:3px;">INJECTER TEST</button>
+                    <select id="meg-voltage" style="padding:2px; font-size:11px;"><option value="500" selected>500 V</option><option value="1000">1000 V</option></select>
+                    <button id="btn-inject-meg" style="font-size:10px; padding:2px; background:#ff4444; color:white; border:none; border-radius:3px;">INJECTER</button>
                 </div>
 
                 <div class="measure-box"><span id="meter-display">0.00</span></div>
                 <div id="probe-status" style="font-size: 11px; color: #aaa; text-align: center;">Branchez les sondes (0/2)</div>
                 <button id="btn-clear-probes" class="btn-remove-probes">Retirer toutes les sondes</button>
-                <label style="font-size: 11px; color: #ffaa00; margin-top:5px; display:block;"><input type="checkbox" id="bypass-mode"> ⚠️ Clé Bypass Maintenance</label>
+                <label style="font-size: 11px; color: #ffaa00; margin-top:5px; display:block;"><input type="checkbox" id="bypass-mode"> ⚠️ Clé Bypass Maint.</label>
             </div>
         </details>
 
         <details open>
-            <summary>5. Commandes & Pannes</summary>
+            <summary>5. Pupitre & Pannes Aléatoires</summary>
             <div class="details-content">
-                <!-- 🌟 LE BANDEAU D'AFFICHAGE REVIENT ICI -->
                 <div style="display: flex; justify-content: space-between; font-size: 12px; background: rgba(0,0,0,0.5); padding: 8px; margin-bottom: 10px; border-radius: 4px;">
-                    <span style="color:#0f0;">N: <span id="m-speed">0</span> tr/min</span>
+                    <span style="color:#0f0;">N: <span id="m-speed">0</span> tr</span>
                     <span style="color:#ffaa00;">I: <span id="m-current">0.0</span> A</span>
                     <span style="color:#ff4444;">T°: <span id="m-temp">20.0</span> °C</span>
                 </div>
-                
                 <div style="display: flex; gap: 10px;">
                     <button id="btn-start" class="btn-success">Démarrer</button>
                     <button id="btn-stop" class="btn-danger">Arrêter</button>
                 </div>
                 <hr style="border-color:#444;">
-                <button id="btn-random-fault" style="background: #8e44ad;">Générer Panne d'Isolement</button>
-                <button id="btn-reset-fault" class="btn-success">Réarmer TGBT (Reset)</button>
+                <button id="btn-rand-elec" style="background: #8e44ad; font-size:11px; width:100%;">⚡ Générer Panne Électrique</button>
+                <button id="btn-rand-mech" style="background: #e67e22; font-size:11px; width:100%; margin-top:5px;">⚙️ Générer Panne Mécanique</button>
+                <button id="btn-reset-fault" class="btn-success" style="margin-top:10px;">Réparer & Réarmer TGBT (Reset)</button>
             </div>
         </details>
     </div>
 
-    <!-- PANNEAU OSCILLOSCOPE DÉPLAÇABLE -->
-    <div id="oscilloscope-panel">
-        <div id="osc-header"><h3 style="margin:0; font-size:12px; color:#fff;">📈 Oscilloscope (Glisser)</h3></div>
+    <div id="oscilloscope-panel" class="floating-panel" style="bottom: 20px; left: 20px;">
+        <div class="panel-header" id="osc-header">📈 Oscilloscope</div>
         <canvas id="osc-canvas" width="280" height="120"></canvas>
-        <div class="osc-legend">
-            <span style="color:#ffaa00;">■ Courant I (A)</span>
-            <span style="color:#00ffff;">■ Vitesse N (tr/min)</span>
+        <div style="font-size: 11px; display: flex; justify-content: space-between; padding: 5px 10px;">
+            <span style="color:#ffaa00;">■ Courant I (A)</span><span style="color:#00ffff;">■ Vitesse N (tr/min)</span>
+        </div>
+    </div>
+
+    <div id="fft-panel" class="floating-panel" style="bottom: 20px; right: 20px; display:none;">
+        <div class="panel-header" id="fft-header">📉 Spectre FFT (Vibrations)</div>
+        <canvas id="fft-canvas" width="280" height="120"></canvas>
+        <div style="font-size: 11px; display: flex; justify-content: space-between; padding: 5px 10px;">
+            <span style="color:#fff;">Hz (Fréquence) ➔</span><span style="color:#0f0;">Amplitude (mm/s)</span>
         </div>
     </div>
 
     <div id="log-panel"></div>
-
-    <script>
-        document.getElementById('kt1-timer').addEventListener('input', (e) => document.getElementById('kt1-val').innerText = e.target.value + 's');
-        document.getElementById('meter-mode').addEventListener('change', (e) => {
-            document.getElementById('meg-options').style.display = (e.target.value === 'MEG') ? 'block' : 'none';
-            document.getElementById('meter-display').innerText = '---';
-        });
-    </script>
     <script type="module" src="/src/main.js"></script>
 </body>
 </html>
