@@ -102,8 +102,8 @@ def generate_3d_model(
 @router.get("/{asset_id}/3d-model")
 def download_3d_model(
     asset_id: uuid.UUID,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+    
 ):
     """Télécharge le modèle GLB déjà généré (appeler generate-3d-model avant si absent)."""
     asset = _get_asset_or_404(asset_id, db)

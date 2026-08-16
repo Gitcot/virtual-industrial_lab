@@ -1,0 +1,257 @@
+INFO:     Started server process [27486]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     41.79.219.219:0 - "GET / HTTP/1.1" 404 Not Found
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/96bbeb30-b408-4ac2-a10c-d0393337484c/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/96bbeb30-b408-4ac2-a10c-d0393337484c/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/96bbeb30-b408-4ac2-a10c-d0393337484c/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/96bbeb30-b408-4ac2-a10c-d0393337484c/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/96bbeb30-b408-4ac2-a10c-d0393337484c/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/96bbeb30-b408-4ac2-a10c-d0393337484c/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/96bbeb30-b408-4ac2-a10c-d0393337484c/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/96bbeb30-b408-4ac2-a10c-d0393337484c/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/96bbeb30-b408-4ac2-a10c-d0393337484c/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/96bbeb30-b408-4ac2-a10c-d0393337484c/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/96bbeb30-b408-4ac2-a10c-d0393337484c/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/96bbeb30-b408-4ac2-a10c-d0393337484c/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/96bbeb30-b408-4ac2-a10c-d0393337484c/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/96bbeb30-b408-4ac2-a10c-d0393337484c/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/auth/register HTTP/1.1" 400 Bad Request
+INFO:     41.79.219.219:0 - "POST /api/auth/login HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions HTTP/1.1" 201 Created
+INFO:     41.79.219.219:0 - "OPTIONS /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "OPTIONS /api/assets HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/assets HTTP/1.1" 201 Created
+INFO:     41.79.219.219:0 - "OPTIONS /api/assets/acd56c49-dc22-432c-a8af-56d12fe53c34/generate-3d-model HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+
+========================================
+🔍 COMMANDE BLENDER :
+blender --background --python /workspaces/virtual-industrial_lab/tools/blender_motor_generator.py -- --shaft-height 90 --body-diameter 150 --body-length 230 --shaft-diameter 24 --shaft-length 50 --output /workspaces/virtual-industrial_lab/apps/api/generated_models/acd56c49-dc22-432c-a8af-56d12fe53c34.glb
+🗣️ CE QUE BLENDER A DIT (STDOUT) :
+Blender 5.0.0 (hash unknown built 2025-11-19 18:30:51)
+00:01.260  bpy.rna          | ERROR Python script error in EXPORT_SCENE_OT_gltf.execute
+Error: Python: Traceback (most recent call last):
+  File "/usr/share/blender/5.0/scripts/addons_core/io_scene_gltf2/__init__.py", line 1090, in execute
+    from .blender.exp import export as gltf2_blender_export
+  File "/usr/share/blender/5.0/scripts/addons_core/io_scene_gltf2/blender/exp/export.py", line 17, in <module>
+    from . import gather as gltf2_blender_gather
+  File "/usr/share/blender/5.0/scripts/addons_core/io_scene_gltf2/blender/exp/gather.py", line 11, in <module>
+    from . import nodes as gltf2_blender_gather_nodes
+  File "/usr/share/blender/5.0/scripts/addons_core/io_scene_gltf2/blender/exp/nodes.py", line 15, in <module>
+    from . import tree as gltf2_blender_gather_tree
+  File "/usr/share/blender/5.0/scripts/addons_core/io_scene_gltf2/blender/exp/tree.py", line 7, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Location: /usr/share/blender/5.0/scripts/modules/bpy/ops.py:109
+
+Blender quit
+
+🚨 ERREURS DE BLENDER (STDERR) :
+/workspaces/virtual-industrial_lab/tools/blender_motor_generator.py:147: DeprecationWarning: 'Material.use_nodes' is expected to be removed in Blender 6.0
+  mat.use_nodes = True
+Traceback (most recent call last):
+  File "/usr/share/blender/5.0/scripts/addons_core/io_scene_gltf2/__init__.py", line 1090, in execute
+    from .blender.exp import export as gltf2_blender_export
+  File "/usr/share/blender/5.0/scripts/addons_core/io_scene_gltf2/blender/exp/export.py", line 17, in <module>
+    from . import gather as gltf2_blender_gather
+  File "/usr/share/blender/5.0/scripts/addons_core/io_scene_gltf2/blender/exp/gather.py", line 11, in <module>
+    from . import nodes as gltf2_blender_gather_nodes
+  File "/usr/share/blender/5.0/scripts/addons_core/io_scene_gltf2/blender/exp/nodes.py", line 15, in <module>
+    from . import tree as gltf2_blender_gather_tree
+  File "/usr/share/blender/5.0/scripts/addons_core/io_scene_gltf2/blender/exp/tree.py", line 7, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/workspaces/virtual-industrial_lab/tools/blender_motor_generator.py", line 193, in <module>
+    main()
+  File "/workspaces/virtual-industrial_lab/tools/blender_motor_generator.py", line 188, in main
+    export_glb(args.output)
+  File "/workspaces/virtual-industrial_lab/tools/blender_motor_generator.py", line 178, in export_glb
+    bpy.ops.export_scene.gltf(
+  File "/usr/share/blender/5.0/scripts/modules/bpy/ops.py", line 109, in __call__
+    ret = _op_call(self.idname_py(), kw)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: Error: Python: Traceback (most recent call last):
+  File "/usr/share/blender/5.0/scripts/addons_core/io_scene_gltf2/__init__.py", line 1090, in execute
+    from .blender.exp import export as gltf2_blender_export
+  File "/usr/share/blender/5.0/scripts/addons_core/io_scene_gltf2/blender/exp/export.py", line 17, in <module>
+    from . import gather as gltf2_blender_gather
+  File "/usr/share/blender/5.0/scripts/addons_core/io_scene_gltf2/blender/exp/gather.py", line 11, in <module>
+    from . import nodes as gltf2_blender_gather_nodes
+  File "/usr/share/blender/5.0/scripts/addons_core/io_scene_gltf2/blender/exp/nodes.py", line 15, in <module>
+    from . import tree as gltf2_blender_gather_tree
+  File "/usr/share/blender/5.0/scripts/addons_core/io_scene_gltf2/blender/exp/tree.py", line 7, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Location: /usr/share/blender/5.0/scripts/modules/bpy/ops.py:109
+
+
+========================================
+
+INFO:     41.79.219.219:0 - "POST /api/assets/acd56c49-dc22-432c-a8af-56d12fe53c34/generate-3d-model HTTP/1.1" 500 Internal Server Error
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "OPTIONS /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "OPTIONS /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK
+INFO:     41.79.219.219:0 - "POST /api/simulation/sessions/919496b8-66dc-48bd-babe-441b01f5fc47/tick HTTP/1.1" 200 OK

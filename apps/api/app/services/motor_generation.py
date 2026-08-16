@@ -105,9 +105,21 @@ def generate_glb_for_asset(asset: Asset, timeout_s: int = 60) -> Path:
         "--shaft-length", str(dims.shaft_length_mm),
         "--output", str(output_path),
     ]
+    
+    # On capture ce que fait Blender
     result = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout_s)
+    
+    # ---- DÉBUT DE NOTRE PIÈGE À BUGS ----
+    print(f"\n" + "="*40, flush=True)
+    print(f"🔍 COMMANDE BLENDER :\n{' '.join(cmd)}", flush=True)
+    print(f"🗣️ CE QUE BLENDER A DIT (STDOUT) :\n{result.stdout}", flush=True)
+    print(f"🚨 ERREURS DE BLENDER (STDERR) :\n{result.stderr}", flush=True)
+    print("="*40 + "\n", flush=True)
+    # ---- FIN DU PIÈGE ----
+
     if result.returncode != 0:
         raise RuntimeError(f"Échec de la génération Blender: {result.stderr[-2000:]}")
     if not output_path.exists():
         raise RuntimeError("Blender s'est terminé sans erreur mais aucun fichier GLB n'a été produit.")
+    
     return output_path
